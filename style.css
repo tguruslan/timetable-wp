@@ -5,7 +5,7 @@
 }
 #timetable form{
     display: grid;
-    grid-template-columns: calc(100% - 100px) 100px;
+    grid-template-columns: 80% 20%;
     margin-bottom: 10px;
 }
 #timetable .day_title {
@@ -27,10 +27,11 @@
     border-collapse: collapse;
 }
 #timetable .lesson td:first-child{
-    width: 90px;
+    width: 20%;
 }
 #timetable td{
     padding: 8px;
+    text-align:left;
 }
 #timetable a{
     text-decoration: none;
