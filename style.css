@@ -1,79 +1,37 @@
-.tmtbl-row{
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
+#timetable{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #333333;
 }
-.tmtbl-row>*{
-    grid-column: span 12;
-    margin-left: 3px;
-    margin-right: 3px;
+#timetable form{
+    display: grid;
+    grid-template-columns: calc(100% - 100px) 100px;
     margin-bottom: 10px;
 }
-@media(max-width: 767px) {
-    .tmtbl-xs-1 {grid-column:      1;}
-    .tmtbl-xs-2 {grid-column: span 2;}
-    .tmtbl-xs-3 {grid-column: span 3;}
-    .tmtbl-xs-4 {grid-column: span 4;}
-    .tmtbl-xs-5 {grid-column: span 5;}
-    .tmtbl-xs-6 {grid-column: span 6;}
-    .tmtbl-xs-7 {grid-column: span 7;}
-    .tmtbl-xs-8 {grid-column: span 8;}
-    .tmtbl-xs-9 {grid-column: span 9;}
-    .tmtbl-xs-10{grid-column: span 10;}
-    .tmtbl-xs-11{grid-column: span 11;}
-    .tmtbl-xs-12{grid-column: span 12;}
+#timetable .day_title {
+    font-weight: bold;
 }
-@media(min-width: 768px){
-    .tmtbl-sm-1 {grid-column:      1;}
-    .tmtbl-sm-2 {grid-column: span 2;}
-    .tmtbl-sm-3 {grid-column: span 3;}
-    .tmtbl-sm-4 {grid-column: span 4;}
-    .tmtbl-sm-5 {grid-column: span 5;}
-    .tmtbl-sm-6 {grid-column: span 6;}
-    .tmtbl-sm-7 {grid-column: span 7;}
-    .tmtbl-sm-8 {grid-column: span 8;}
-    .tmtbl-sm-9 {grid-column: span 9;}
-    .tmtbl-sm-10{grid-column: span 10;}
-    .tmtbl-sm-11{grid-column: span 11;}
-    .tmtbl-sm-12{grid-column: span 12;}
+#timetable button{
+    background: #32b643;
+    border-color: #ffffff00;
+    color: #fff;
+    border-radius: 3px;
+    margin-left: 10px;
 }
-@media(min-width: 992px){
-    .tmtbl-md-1 {grid-column:      1;}
-    .tmtbl-md-2 {grid-column: span 2;}
-    .tmtbl-md-3 {grid-column: span 3;}
-    .tmtbl-md-4 {grid-column: span 4;}
-    .tmtbl-md-5 {grid-column: span 5;}
-    .tmtbl-md-6 {grid-column: span 6;}
-    .tmtbl-md-7 {grid-column: span 7;}
-    .tmtbl-md-8 {grid-column: span 8;}
-    .tmtbl-md-9 {grid-column: span 9;}
-    .tmtbl-md-10{grid-column: span 10;}
-    .tmtbl-md-11{grid-column: span 11;}
-    .tmtbl-md-12{grid-column: span 12;}
+#timetable table{
+    width: 100%;
+    margin: 0 0 10px 0;
 }
-@media(min-width: 1200px) {
-    .tmtbl-lg-1 {grid-column:      1;}
-    .tmtbl-lg-2 {grid-column: span 2;}
-    .tmtbl-lg-3 {grid-column: span 3;}
-    .tmtbl-lg-4 {grid-column: span 4;}
-    .tmtbl-lg-5 {grid-column: span 5;}
-    .tmtbl-lg-6 {grid-column: span 6;}
-    .tmtbl-lg-7 {grid-column: span 7;}
-    .tmtbl-lg-8 {grid-column: span 8;}
-    .tmtbl-lg-9 {grid-column: span 9;}
-    .tmtbl-lg-10{grid-column: span 10;}
-    .tmtbl-lg-11{grid-column: span 11;}
-    .tmtbl-lg-12{grid-column: span 12;}
-}
-
-.tmtbl label {
-    font-weight: 800;
-    font-size: 16px;
-}
-.tmtbl .select2{
-    width:100% !important;
-}
-.tmtbl .table-container table td, .tmtbl .table-container table th {
-    border: 1px solid #000;
+#timetable table,#timetable td,#timetable th{
+    border: 1px solid #ddd;
     border-collapse: collapse;
-    border-spacing: 0;
+}
+#timetable .lesson td:first-child{
+    width: 90px;
+}
+#timetable td{
+    padding: 8px;
+}
+#timetable a{
+    text-decoration: none;
 }
