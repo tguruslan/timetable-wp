@@ -10,6 +10,4 @@
 
 додайте шорткод з заповненими параметрами:
 
-для студентів [tmtbl_stud faculty_id='' okr='' education_form_id='']
-
-для викладача [tmtbl_teacher]
+[tmtbl_stud faculty_id='' okr='' education_form_id='' lang='']
