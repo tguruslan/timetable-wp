@@ -231,7 +231,7 @@ var slim = new SlimSelect({
 
 slim.enable()
 
-document.querySelector('button').addEventListener('click', function (e) {
+main.querySelector('button').addEventListener('click', function (e) {
     e.preventDefault();
     getRozklad(document.querySelector('#timetableSearch').value);
 });
