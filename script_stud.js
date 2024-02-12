@@ -1,370 +1,243 @@
-(function($){
-    function setCookie(cName, cValue) {
-        let date = new Date();
-        date.setTime(date.getTime() + 86400 * 180);
-        const expires = "expires=" + date.toUTCString();
-        document.cookie = cName + "=" + cValue + "; " + expires + "; path=/";
+var searchParams = new URLSearchParams(window.location.search);
+var main = document.querySelector('#timetable');
+main.appendChild(document.createElement('form'));
+main.appendChild(document.createElement('div')).className = 'rozklad_container';
+var container = document.querySelector('.rozklad_container');
+
+var education_form_id=main.getAttribute("education_form_id");
+var okr=main.getAttribute("okr");
+var faculty_id=main.getAttribute("faculty_id");
+var hide=main.getAttribute("hide");
+var lang=main.getAttribute("lang");
+
+if (lang == 'en'){
+    var api_url = 'https://rozklad.udpu.edu.ua/en/api';
+}else{
+    lang='uk';
+    var api_url = 'https://rozklad.udpu.edu.ua/api';
+}
+
+var texts = {
+    uk:{
+        search:'Пошук',
+        lesson:'пара',
+        subject:'Предмет',
+        works_type:'Тип заняття',
+        groups:'Групи',
+        subgroups:'Підгрупи',
+        form_control:'Форма контролю (для обраної групи)',
+        teacher:'Викладач',
+        classroom:'Авдиторія',
+        url:'Посилання',
+        comment:'Коментар',
+        enter_2_or_more:'Будь ласка, введіть 2 або більше літер',
+        searchText: 'На данний момент нічого не знайдено',
+        searchPlaceholder: 'Введіть назву групи',
+        placeholderText: 'Введіть назву групи',
+    },
+    en:{
+        search:'Find',
+        lesson:'lesson',
+        subject:'Subject',
+        works_type:'Lesson type',
+        groups:'Groups',
+        subgroups:'Subgroups',
+        form_control:'Control form (for the selected group)',
+        teacher:'Teacher',
+        classroom:'Classroom',
+        url:'Link',
+        comment:'Comment',
+        enter_2_or_more:'Please enter 2 or more characters',
+        searchText: 'Nothing found at the moment',
+        searchPlaceholder: 'Enter a group name',
+        placeholderText: 'Enter a group name',
     }
-    jQuery(document).ready(function(){
-        var api_url='https://rozklad.udpu.edu.ua/api';
-        var url = window.location.href.split('?')[0];
-        var params={
-                faculty_id:$("#faculty_id").val(),
-                okr:$("#okr").val(),
-                speciality_id:$("#speciality_id").val(),
-                education_form_id:$("#education_form_id").val(),
-                course:$("#course").val(),
-                group: $("#group").val(),
-            };
-        if(params.group){history.pushState({}, null, url + '?' + Object.keys(params).map(key => key + '=' + params[key]).join('&')); setCookie('group', params.group);}
+}
 
-        jQuery('#faculty_id').on('change', function (event) {
-            jQuery("#okr,#speciality_id,#education_form_id,#course,#group").val("").trigger("change");
-        });
-        jQuery('#okr').on('change', function (event) {
-            jQuery("#speciality_id,#education_form_id,#course,#group").val("").trigger("change");
-        });
-        jQuery('#speciality_id').on('change', function (event) {
-            jQuery("#education_form_id,#course,#group").val("").trigger("change");
-        });
-        jQuery('#education_form_id').on('change', function (event) {
-            jQuery("#course,#group").val("").trigger("change");
-        });
-        jQuery('#course').on('change', function (event) {
-            jQuery("#group").val("").trigger("change");
-        });
+var text = texts[lang];
 
+main.querySelector('form').appendChild(document.createElement('select')).id="timetableSearch";
+main.querySelector('form').appendChild(document.createElement('button')).textContent = text.search;
 
-
-
-        if($('select#faculty_id').length){
-                jQuery('#faculty_id').select2({
-                    minimumResultsForSearch:-1,
-                    placeholder:'Оберіть значення',
-                    ajax: {
-                        delay: 250,
-                        url: api_url+'/filter',
-                        dataType: 'json',
-                        type: "GET",
-                        data: {
-                            type: 'faculty_id'
-                        },
-                        processResults: function (data) {
-                            return {
-                                results: data
-                            };
-                        },
-                    }
-                });
+function getCookieValue(cookieName) {
+    var cookies = document.cookie.split("; ");
+    for (var i = 0; i < cookies.length; i++) {
+        var cookieParts = cookies[i].split("=");
+        var name = cookieParts[0].trim();
+        var value = cookieParts[1];
+        if (name === cookieName) {
+            return value;
         }
+    }
+    return null;
+}
 
-        if($('select#okr').length){
-            jQuery('#okr').select2({
-                minimumResultsForSearch:-1,
-                placeholder:'Оберіть значення',
-                ajax: {
-                    delay: 250,
-                    url: api_url+'/filter',
-                    dataType: 'json',
-                    type: "GET",
-                    data: {
-                        type: 'okr',
-                        filters: function(params) { return JSON.stringify({
-                            faculty_id:$('#faculty_id').val()
-                        });}
+function setCookie(cookieName, cookieValue, expirationDays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+}
 
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    },
-                }
-            });
-        }
-
-        jQuery('#speciality_id').select2({
-            minimumResultsForSearch:-1,
-            placeholder:'Оберіть значення',
-            ajax: {
-                delay: 250,
-                url: api_url+'/filter',
-                dataType: 'json',
-                type: "GET",
-                data: {
-                    type: 'speciality',
-                    filters: function(params) { return JSON.stringify({
-                        faculty_id:$("#faculty_id").val(),
-                        okr:$("#okr").val()
-                    });}
-
-                },
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                },
-            }
-        });
-
-        if($('select#education_form_id').length){
-            jQuery('#education_form_id').select2({
-                minimumResultsForSearch:-1,
-                placeholder:'Оберіть значення',
-                ajax: {
-                    delay: 250,
-                    url: api_url+'/filter',
-                    dataType: 'json',
-                    type: "GET",
-                    data: {
-                        type: 'education_form_id',
-                        filters: function(params) { return JSON.stringify({
-                            speciality_id:$("#speciality_id").val()
-                        });}
-
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    },
-                }
-            });
-        }
-
-        jQuery('#course').select2({
-            minimumResultsForSearch:-1,
-            placeholder:'Оберіть значення',
-            ajax: {
-                delay: 250,
-                url: api_url+'/filter',
-                dataType: 'json',
-                type: "GET",
-                data: {
-                    type: 'course',
-                    filters: function(params) { return JSON.stringify({
-                        speciality_id:$("#speciality_id").val(),
-                        education_form_id:$("#education_form_id").val()
-                    });}
-
-                },
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                },
-            }
-        });
-
-        jQuery('#group').select2({
-            minimumResultsForSearch:-1,
-            placeholder:'Оберіть значення',
-            ajax: {
-                delay: 250,
-                url: api_url+'/filter',
-                dataType: 'json',
-                type: "GET",
-                data: {
-                    type: 'group',
-                    filters: function(params) { return JSON.stringify({
-                        speciality_id:$("#speciality_id").val(),
-                        course:$("#course").val(),
-                        education_form_id:$("#education_form_id").val()
-                    });}
-
-                },
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                },
-            }
-        });
-
-
-
-        $(document).on('click','[type="submit"]', function (e){
-            e.preventDefault();
-            var url = window.location.href.split('?')[0];
-            var params={
-                faculty_id:$("#faculty_id").val(),
-                okr:$("#okr").val(),
-                speciality_id:$("#speciality_id").val(),
-                education_form_id:$("#education_form_id").val(),
-                course:$("#course").val(),
-                group: $("#group").val()
-            };
-            $.ajax({
-            url: api_url+'/days',
-            method: "GET",
-            async: false,
-            data: {
-                type: 'student',
-                id: params.group
-            }
+function getData(){
+    var select_data=null;
+    var data_group=null;
+    if(searchParams.has('group')){
+        data_group=searchParams.get('group')
+    }else if(getCookieValue("group")){
+        data_group=getCookieValue("group")
+    }
+    if(data_group){
+        var params = {
+            filters: JSON.stringify({
+                group:data_group,
+                education_form_id: education_form_id,
+                okr: okr,
+                faculty_id: faculty_id,
+                hide: hide,
             })
-            .done(function( data ) {
-                if (Object.keys(data).length < 1){
-                    $(document).find('.table-container').html(
-                        $(
-                            '<div>',
-                            {
-                                style: 'text-align:center;',
-                                html:$(
-                                        '<h3>',
-                                        {
-                                            text:'На данний момент нічого не знайдено'
-                                        }
-                                    )
-                            }
-                        )[0].outerHTML
-                        + $('<br>')[0].outerHTML
-                        + $('<br>')[0].outerHTML
-                    );
-                    return;
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", api_url + '/search?' + new URLSearchParams(params).toString(), false);
+        xhr.send();
+        select_data=JSON.parse(xhr.responseText).map((el) => {return {text: el.text,value: el.id}})
+    }
+    return select_data;
+}
+
+function craateDay(date,text){
+    table=document.createElement('table')
+    table.className='day d'+date
+    tbody=document.createElement('tbody')
+    tr=document.createElement('tr')
+    td=document.createElement('td')
+
+    td.className='day_title'
+    td.colSpan='2'
+    td.textContent=text.replaceAll('-','.')
+
+    container.appendChild(table)
+    table.appendChild(tbody)
+    tbody.appendChild(tr)
+    tr.appendChild(td)
+}
+
+function createLessons(date,lessons){
+    var day = document.querySelector('.d'+date+' tbody');
+    for (const [number, ids] of Object.entries(lessons)) {
+        for (const [id,lesson] of Object.entries(ids)) {
+            var lesson_tr = document.createElement('tr')
+            lesson_tr.className='lesson'
+            day.appendChild(lesson_tr)
+
+            lesson_tr.appendChild(document.createElement('td')).innerHTML = (lesson.time.includes('-')?'<b>'+number+' '+text.lesson+'</b><br>':'')+lesson.time
+
+            var lesson_detail='<b>'+text.subject+':</b> '+lesson.subject+'<br>'+
+                              '<b>'+text.works_type+':</b> '+lesson.works_type+'<br>'+
+                              '<b>'+text.groups+':</b> '+lesson.groups+'<br>'+
+                              (lesson.subgroups?'<b>'+text.subgroups+':</b> '+lesson.subgroups+'<br>':'')+
+                              '<b>'+text.form_control+':</b> '+lesson.form_control+'<br>'+
+
+                              (lesson.teacher?'<b>'+text.teacher+':</b> '+lesson.teacher+'<br>':'')+
+                              (lesson.classroom?'<b>'+text.classroom+':</b> '+lesson.classroom+'<br>':'')+
+                              (lesson.url?'<a href="'+lesson.url+'" target="_blank">'+text.url+'</a><br>':'')+
+                              (lesson.comment?'<b>'+text.comment+':</b> '+lesson.comment+'<br>':'');
+            lesson_tr.appendChild(document.createElement('td')).innerHTML=lesson_detail;
+        }
+    }
+}
+
+function getRozklad(group){
+    var params={}
+    if(group){params["group"]=group;}
+
+    var url = window.location.href.split('?')[0];
+    history.pushState({}, null, url + '?' + Object.keys(params).map(key => key + '=' + params[key]).join('&'));
+
+    setCookie("group", group, 30);
+    document.querySelector('.rozklad_container').innerHTML=''
+    var data={
+        type: 'student',
+        id: group
+    }
+
+    fetch(api_url + '/days?' + new URLSearchParams(data).toString(), {
+        method: 'GET',
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        for (const [key, value] of Object.entries(data)) {
+            craateDay(key,value);
+            var data={
+                    type: 'student',
+                    id: group,
+                    date: key
                 }
-                let html='<table>'+'<tbody>';
-                $.each( data, function( intdate, stringdate ) {
-                    html+=$(
-                        '<tr>',
-                        {
-                            html: $(
-                                '<td>',
-                                {
-                                    colspan:2,
-                                    html:$(
-                                        '<b>',
-                                        {
-                                            text: stringdate
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                    )[0].outerHTML;
-                    $.ajax({
-                        url: api_url+'/rozklad',
-                        method: "GET",
-                        async: false,
-                        data: {
-                            type: 'student',
-                            id: params.group,
-                            date: intdate
+
+            fetch(api_url + '/rozklad?' + new URLSearchParams(data).toString(), {
+                method: 'GET',
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                createLessons(key,data);
+            })
+        }
+    })
+}
+
+
+var slim = new SlimSelect({
+    select: '#timetableSearch',
+    data: getData(),
+    events: {
+        search: (search, currentData) => {
+            return new Promise((resolve, reject) => {
+                if (search.length < 2) {
+                    return reject(text.enter_2_or_more)
+                }
+                var params = {
+                    q: search,
+                    filters: JSON.stringify({
+                        education_form_id: education_form_id,
+                        okr: okr,
+                        faculty_id: faculty_id,
+                        hide: hide,
+                    })
+                };
+                fetch(api_url + '/search?' + new URLSearchParams(params).toString(), {
+                method: 'GET',
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    const options = data
+                    .map((el) => {
+                        return {
+                        text: el.text,
+                        value: el.id,
                         }
                     })
-                    .done(function( rozklad ) {
-                        $.each( rozklad, function( number, id ) {
-                            $.each( id, function(i, lesson) {
-
-                                html+=$(
-                                    '<tr>',
-                                    {
-                                        html: $(
-                                            '<td>',
-                                            {
-                                                html:
-                                                    $(
-                                                        '<b>',
-                                                        {
-                                                            text: number+' пара'
-                                                        }
-                                                    )[0].outerHTML
-                                                    + $('<br>')[0].outerHTML
-                                                    + lesson.time
-                                            }
-                                        )[0].outerHTML
-                                        + $(
-                                            '<td>',
-                                            {
-                                                html:
-                                                $(
-                                                    '<b>',
-                                                    {
-                                                        text: 'Предмет: '
-                                                    }
-                                                )[0].outerHTML
-                                                + lesson.subject
-                                                + $('<br>')[0].outerHTML
-
-                                                + $(
-                                                    '<b>',
-                                                    {
-                                                        text: 'Тип заняття: '
-                                                    }
-                                                )[0].outerHTML
-                                                + lesson.works_type
-                                                + $('<br>')[0].outerHTML
-
-                                                + $(
-                                                    '<b>',
-                                                    {
-                                                        text: 'Групи: '
-                                                    }
-                                                )[0].outerHTML
-                                                + lesson.groups
-                                                + $('<br>')[0].outerHTML
-
-                                                + $(
-                                                    '<b>',
-                                                    {
-                                                        text: 'Форма контролю (для обраної групи): '
-                                                    }
-                                                )[0].outerHTML
-                                                + lesson.form_control
-                                                + $('<br>')[0].outerHTML
-
-                                                + ( lesson.teacher ? $(
-                                                    '<b>',
-                                                    {
-                                                        text: 'Викладач: '
-                                                    }
-                                                )[0].outerHTML
-                                                + lesson.teacher
-                                                + $('<br>')[0].outerHTML : '' )
-
-                                                + ( lesson.classroom ? $(
-                                                    '<b>',
-                                                    {
-                                                        text: 'Аудиторія: '
-                                                    }
-                                                )[0].outerHTML
-                                                + lesson.classroom
-                                                + $('<br>')[0].outerHTML : '' )
-
-                                                + ( lesson.url ? $(
-                                                    '<a>',
-                                                    {
-                                                        text: 'Посилання',
-                                                        href: lesson.url,
-                                                        target: '_blank'
-                                                    }
-                                                )[0].outerHTML
-                                                + $('<br>')[0].outerHTML : '' )
-
-                                                + ( lesson.comment ? $(
-                                                    '<b>',
-                                                    {
-                                                        text: 'Коментар: '
-                                                    }
-                                                )[0].outerHTML
-                                                + lesson.comment
-                                                + $('<br>')[0].outerHTML : '' )
-                                            }
-                                        )[0].outerHTML
-                                    }
-                                )[0].outerHTML;
-                            });
-                        });
-                    });
-                });
-                html+='</tbody>'+'</table>';
-                $(document).find('.table-container').html(html);
+                    resolve(options)
+                })
             })
-            .always(function(){
-                history.pushState({}, null, url + '?' + Object.keys(params).map(key => key + '=' + params[key]).join('&'));
-                setCookie('group', params.group);
-            });
-        });
+        }
+    },
+    settings: {
+        searchText: text.searchText,
+        searchPlaceholder: text.searchPlaceholder,
+        placeholderText: text.placeholderText,
+    }
+});
 
-    });
-})(jQuery);
+slim.enable()
+
+document.querySelector('button').addEventListener('click', function (e) {
+    e.preventDefault();
+    getRozklad(document.querySelector('#timetableSearch').value);
+});
+
+if(searchParams.has('group')){
+    getRozklad(searchParams.get("group"));
+}else if(group=getCookieValue("group")){
+    getRozklad(group);
+}
