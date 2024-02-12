@@ -236,8 +236,10 @@ main.querySelector('button').addEventListener('click', function (e) {
     getRozklad(document.querySelector('#timetableSearch').value);
 });
 
-if(searchParams.has('group')){
-    getRozklad(searchParams.get("group"));
-}else if(group=getCookieValue("group")){
-    getRozklad(group);
+if(getData().length){
+    if(searchParams.has('group')){
+        getRozklad(searchParams.get("group"));
+    }else if(group=getCookieValue("group")){
+        getRozklad(group);
+    }
 }
