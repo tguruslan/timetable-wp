@@ -28,5 +28,5 @@ add_shortcode("tmtbl_teacher", function($atts, $content = null){
     wp_enqueue_style('slimselect', '//unpkg.com/slim-select@latest/dist/slimselect.css');
     wp_enqueue_style('timetable', '//rozklad.udpu.edu.ua/css/teacher.css');
     wp_enqueue_script('timetable', '//rozklad.udpu.edu.ua/js/teacher.js', array('slimselect'), null );
-    return '<div id="timetable" faculty_id="'.$faculty_id.'" lang="'.$lang.'"></div>';
+    return '<div id="timetable_teacher" faculty_id="'.$faculty_id.'" lang="'.$lang.'"></div>';
 });
