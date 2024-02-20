@@ -2,8 +2,8 @@
 /*
 Plugin Name: timetable
 Plugin URI: https://rozklad.udpu.edu.ua/
-Description: вставте шорткод на сторінку [tmtbl_stud faculty_id='' okr='' education_form_id='' lang='']
-Version: 1.1
+Description: вставте шорткод на сторінку [tmtbl_stud faculty_id='' okr='' education_form_id='' lang=''] або [tmtbl_teacher faculty_id='' lang='']
+Version: 1.2
 Author: Ruslan IOC
 Author URI: https://github.com/tguruslan
 */
@@ -20,4 +20,13 @@ add_shortcode("tmtbl_stud", function($atts, $content = null){
     if($okr){array_push($hide, "okr");}    
     $html='<div id="timetable" hide="'.implode(';',$hide).'" faculty_id="'.$faculty_id.'" education_form_id="'.$education_form_id.'" okr="'.$okr.'" lang="'.$lang.'"></div>';
     return $html;
+});
+
+add_shortcode("tmtbl_teacher", function($atts, $content = null){
+    extract(shortcode_atts(array("faculty_id" => '',"lang"=> ''), $atts));  
+    wp_enqueue_script('slimselect', '//unpkg.com/slim-select@latest/dist/slimselect.min.js');
+    wp_enqueue_style('slimselect', '//unpkg.com/slim-select@latest/dist/slimselect.css');
+    wp_enqueue_style('timetable', '//rozklad.udpu.edu.ua/css/teacher.css');
+    wp_enqueue_script('timetable', '//rozklad.udpu.edu.ua/js/teacher.js', array('slimselect'), null );
+    return '<div id="timetable" faculty_id="'.$faculty_id.'" lang="'.$lang.'"></div>';
 });
