@@ -2,7 +2,7 @@
 /*
 Plugin Name: timetable
 Plugin URI: https://rozklad.udpu.edu.ua/
-Description: [tmtbl_stud faculty_id='' okr='' education_form_id='' lang='']
+Description: вставте шорткод на сторінку [tmtbl_stud faculty_id='' okr='' education_form_id='' lang='']
 Version: 1.1
 Author: Ruslan IOC
 Author URI: https://github.com/tguruslan
